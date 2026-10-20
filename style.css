@@ -1,0 +1,121 @@
+/* Odd Hours Bakehouse — the card room after midnight: walnut, olive felt, brass
+ * and a red chip (brand/README.md § The look). The blue lock (tools/check-blue.mjs): in every colour, blue is at
+ * most the smaller of red and green, so no colour here leans blue. No link is
+ * underlined in any state (DUH AGENTS.md rule 12): colour and weight carry it. */
+:root {
+  --ground: #0f0c08;   /* walnut, near black — a shade darker 2026-10-13 */
+  --panel:  #19130c;   /* the rail */
+  --felt:   #232a11;   /* olive felt */
+  --felt-2: #4d5a24;
+  --line:   #3f311f;
+  --ink:    #f0e6cf;   /* card stock */
+  --muted:  #c2b391;
+  --brass:  #e8a838;   /* links and marks */
+  --chip:   #d0482c;   /* the red chip: warnings */
+  --note:   #30220c;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --ground: #e9dfc8; --panel: #ddcfb0; --felt: #cdc597; --felt-2: #5f6c28;
+    --line: #ab966c; --ink: #22190f; --muted: #5a4a30; --brass: #8a4e00;
+    --chip: #a8321a; --note: #f0d9a0;
+    color-scheme: light;
+  }
+}
+/* Odd Hours, the brand's own display face: drawn from nothing in font/glyphs.mjs,
+ * built by font/build.mjs (brand/README.md § The type). The one face this site
+ * embeds; running text stays in the reader's own system face. */
+@font-face { font-family: "Odd Hours"; src: url("fonts/OddHours-Regular.ttf") format("truetype"); font-weight: 400; font-style: normal; font-display: swap; }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--ground); color: var(--ink);
+  font: 17px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+a, a:link, a:visited, a:hover, a:focus, a:active { color: var(--brass); font-weight: 600; text-decoration: none; border-bottom: 0; }
+a:hover, a:focus-visible { color: var(--ink); }
+a:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
+h1, h2, h3 { font-family: Georgia, "Times New Roman", serif; line-height: 1.2; font-weight: 700; }
+h1 { font-family: "Odd Hours", Georgia, serif; font-weight: 400; letter-spacing: .02em; }
+h2 { margin-top: 2.2rem; border-top: 2px solid var(--line); padding-top: 1rem; }
+
+.bar { background: var(--panel); border-bottom: 2px solid var(--line); }
+.bar-in { max-width: 70rem; margin: 0 auto; padding: .6rem 16px; display: flex; flex-wrap: wrap; gap: .4rem 1.2rem; align-items: center; }
+.home { display: flex; align-items: center; gap: .5rem; font-family: "Odd Hours", Georgia, serif; font-weight: 400; letter-spacing: .02em; font-size: 1.25rem; color: var(--ink) !important; }
+.home img { width: 28px; height: 28px; }
+.nav { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .2rem 1rem; font-size: .95rem; }
+.nav a[aria-current="page"] { color: var(--ink); }
+
+.draft { background: var(--note); color: var(--ink); text-align: center; padding: .5rem 16px; font-size: .9rem; border-bottom: 2px solid var(--line); }
+
+.hero { background: var(--felt); border-bottom: 2px solid var(--line); }
+.hero-in { max-width: 70rem; margin: 0 auto; padding: 2.2rem 16px 2rem; }
+.hero h1 { margin: 0 0 .5rem; font-size: clamp(1.9rem, 5vw, 3rem); }
+main h1.part { margin: 2.6rem 0 0; padding-top: 1rem; border-top: 2px solid var(--line); font-size: clamp(1.6rem, 4vw, 2.2rem); }
+.lede { margin: 0; max-width: 46rem; font-size: 1.12rem; color: var(--ink); }
+
+.age { display: inline-block; margin-bottom: .7rem; padding: .1rem .55rem; border: 2px solid var(--chip); color: var(--ink); font-weight: 700; font-size: .85rem; letter-spacing: .04em; }
+
+/* Three columns (owner, 2026-10-16): contents on the left, never in the
+ * centre; content in the centre; every picture in the right column. Narrow
+ * screens stack them: contents, content, pictures. */
+.layout { max-width: 86rem; margin: 0 auto; padding: 1rem 16px 3rem; display: grid; grid-template-columns: 14rem minmax(0, 1fr) 16rem; gap: 2rem; align-items: start; }
+.toc { position: sticky; top: 1rem; max-height: calc(100vh - 2rem); overflow-y: auto; font-size: .9rem; border-right: 2px solid var(--line); padding-right: 1rem; }
+.toc-h { margin: 0 0 .5rem; font-family: "Odd Hours", Georgia, serif; font-weight: 400; letter-spacing: .02em; color: var(--muted); }
+.toc ol { list-style: none; margin: 0; padding: 0; }
+.toc li { margin: 0 0 .35rem; }
+.toc .t2 { padding-left: .9rem; font-weight: 400; }
+.toc .t2 a { font-weight: 400; }
+.pics { display: grid; gap: 1rem; }
+.pics img { width: 100%; height: auto; border: 2px solid var(--line); }
+main { min-width: 0; }
+@media (max-width: 64rem) {
+  .layout { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
+  .toc { position: static; max-height: none; border-right: 0; border-bottom: 2px solid var(--line); padding: 0 0 .8rem; }
+}
+main > section, .prose { max-width: 46rem; }
+.law { margin: .4rem 0 1rem; padding: 0; list-style: none; }
+.law li { margin: 0 0 .8rem; padding: .7rem .9rem; background: var(--panel); border-left: 4px solid var(--felt-2); }
+.law .cite { display: block; margin-top: .25rem; font-size: .88rem; color: var(--muted); }
+.callout { margin: 1.4rem 0; padding: .9rem 1rem; border: 2px solid var(--chip); background: var(--panel); }
+.callout strong { color: var(--ink); }
+.help { margin: 1.4rem 0; padding: .9rem 1rem; border: 2px solid var(--felt-2); background: var(--panel); }
+.help p { margin: .25rem 0; }
+.notchecked li { color: var(--muted); }
+.notchecked li::marker { color: var(--chip); }
+.sources { font-size: .92rem; }
+.sources li { margin-bottom: .35rem; overflow-wrap: anywhere; }
+.tag { font-size: .78rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--chip); }
+
+.cards { list-style: none; padding: 0; margin: 1.2rem 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: 1rem; }
+.cards li { background: var(--panel); border: 2px solid var(--line); padding: 1rem; }
+.cards h3 { margin: 0 0 .4rem; }
+.cards p { margin: 0; color: var(--muted); }
+table { border-collapse: collapse; width: 100%; max-width: 46rem; font-size: .95rem; }
+th, td { text-align: left; padding: .45rem .6rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--muted); font-weight: 600; }
+.wrap { overflow-x: auto; }
+
+footer { background: var(--panel); border-top: 2px solid var(--line); }
+.foot-in { max-width: 70rem; margin: 0 auto; padding: 1.4rem 16px 2rem; font-size: .9rem; color: var(--muted); }
+.foot-in p { margin: .3rem 0; max-width: 52rem; }
+.wordmark { font-family: "Odd Hours", Georgia, serif; font-weight: 400; letter-spacing: .02em; font-size: 1.2rem; color: var(--ink); }
+
+/* The teams map (map.html, drawn by tools/build-map.mjs). A mark means a home
+ * venue; its size, title and the table say which teams — never its colour. */
+main > section:has(.mapwrap) { max-width: none; }
+.leagues { border: 2px solid var(--line); background: var(--panel); margin: 1rem 0 .6rem; padding: .5rem .9rem .7rem; display: flex; flex-wrap: wrap; gap: .3rem 1.2rem; }
+.leagues legend { padding: 0 .3rem; color: var(--muted); font-size: .9rem; }
+.leagues label { font-size: .95rem; white-space: nowrap; cursor: pointer; }
+.leagues input { accent-color: var(--brass); }
+.leagues .n, .mapcount { color: var(--muted); }
+.mapcount { font-size: .9rem; margin: 0 0 .6rem; }
+.usmap { display: block; width: 100%; height: auto; background: var(--panel); border: 2px solid var(--line); }
+.usmap .land { fill: var(--felt); }
+.usmap .borders { fill: none; stroke: var(--line); stroke-width: 1; stroke-linejoin: round; }
+.usmap .mk { fill: var(--brass); stroke: var(--ground); stroke-width: 1.2; fill-opacity: .9; cursor: pointer; }
+.usmap .mk:hover { fill: var(--ink); }
+.teams { max-width: 60rem; }
+.teams .st th { color: var(--ink); font-family: Georgia, serif; font-size: 1.05rem; padding-top: 1rem; }
+.teams tr.off, .teams tbody.off { display: none; }
