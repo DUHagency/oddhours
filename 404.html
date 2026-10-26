@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>Not found — Odd Hours Bakehouse</title>
+<link rel="icon" href="img/mark.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
+<style>
+.gate { max-width: 26rem; margin: 10vh auto 3rem; padding: 0 16px; }
+.gate h1 { margin: .6rem 0 .2rem; }
+.gate p { color: var(--muted); margin: 0 0 1.2rem; }
+.gate label { display: block; margin: .8rem 0 .25rem; font-weight: 600; }
+.gate input { width: 100%; padding: .6rem .7rem; font: inherit; color: var(--ink); background: var(--panel); border: 2px solid var(--line); }
+.gate input:focus { outline: 2px solid var(--brass); outline-offset: 2px; border-color: var(--brass); }
+.gate button { margin-top: 1.1rem; padding: .65rem 1.2rem; font: inherit; font-weight: 700; color: var(--ground); background: var(--brass); border: 2px solid var(--brass); cursor: pointer; }
+.gate button:hover, .gate button:focus-visible { background: var(--ink); border-color: var(--ink); }
+.gate .no { display: none; margin-top: .9rem; padding: .6rem .8rem; border: 2px solid var(--chip); color: var(--ink); }
+.gate .no.on { display: block; }
+.gate .mark { width: 56px; height: 56px; display: block; }
+</style>
+</head>
+<body>
+<main class="gate" id="gate">
+  <img class="mark" src="img/mark.svg" alt="">
+  <h1>Odd Hours Bakehouse</h1>
+  <p>Locked while the pages are in draft. Sign in to read.</p>
+  <form id="f" autocomplete="on">
+    <label for="u">User</label>
+    <input id="u" name="username" autocomplete="username" autocapitalize="off" spellcheck="false" required>
+    <label for="p">Password</label>
+    <input id="p" name="password" type="password" autocomplete="current-password" required>
+    <button type="submit">Unlock</button>
+    <p class="no" id="no" role="alert">That isn't it.</p>
+  </form>
+  <noscript><p>This page needs JavaScript to unlock.</p></noscript>
+</main>
+<script id="gate-data" type="application/json">{"iv":"6o1Ci6Wktbl/g+Sr","ct":"I7D72jft1KB4G1h8FWZvBhcSqcyO0abVyItBpddm3cu58pR1mmCnwIU9Qldz58cIq8o8VbIBpiweMte41tPMY/K0kopSY5PtWeftnoeiUiDnefrEtwEXwE3o5W4tK7IIIf8yF8Bv6LND2yNZGs6l9d4pSSbCT7pdetXSJfZPafGJq4sOxrehgb+zI31RZCcIPFU97B+5xMJZJe+oZmNb44T9L1PWcb+TTZDoqATnKmEkZ4xmCDqx/dceBalaJ+iv0eQAYuCKxsdp5DMA9g3hExrD0jrmsstFvZqx5CzleLqCMNQ5UnEr7k0FoTKXV6SM87xJ5wGai2cZxUVOInHGw9Blf/fQn1JZisGewIjFMmD0Pz3CvY5m26LBUAKK100="}</script>
+<script>
+(function () {
+  var SALT = "oddhours-gate-v1|", ROUNDS = 310000, STORE = 'oh-gate-key';
+  var data = JSON.parse(document.getElementById('gate-data').textContent);
+  var enc = new TextEncoder(), dec = new TextDecoder();
+  function bytes(s) { var b = atob(s), u = new Uint8Array(b.length); for (var i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return u; }
+  function b64(u) { var s = ''; for (var i = 0; i < u.length; i++) s += String.fromCharCode(u[i]); return btoa(s); }
+  function derive(user, pass) {
+    return crypto.subtle.importKey('raw', enc.encode(pass), 'PBKDF2', false, ['deriveKey']).then(function (k) {
+      return crypto.subtle.deriveKey({ name: 'PBKDF2', salt: enc.encode(SALT + user.trim().toLowerCase()), iterations: ROUNDS, hash: 'SHA-256' }, k, { name: 'AES-GCM', length: 256 }, true, ['decrypt']);
+    });
+  }
+  // document.open() replaces the document only once the stub has finished
+  // LOADING (not just parsing): written any earlier, Chrome appends the page
+  // under the form instead of replacing it — seen on the saved-key path, which
+  // runs before the stylesheet and the mark have arrived. So wait for load.
+  function ready() { return document.readyState === 'complete' ? Promise.resolve() : new Promise(function (r) { window.addEventListener('load', r, { once: true }); }); }
+  function open(key) {
+    return crypto.subtle.decrypt({ name: 'AES-GCM', iv: bytes(data.iv) }, key, bytes(data.ct)).then(function (pt) {
+      var html = dec.decode(pt);
+      return ready().then(function () { document.open(); document.write(html); document.close(); });
+    });
+  }
+  function keep(key) { return crypto.subtle.exportKey('raw', key).then(function (raw) { try { sessionStorage.setItem(STORE, b64(new Uint8Array(raw))); } catch (e) {} }); }
+  var saved = null; try { saved = sessionStorage.getItem(STORE); } catch (e) {}
+  if (saved) {
+    crypto.subtle.importKey('raw', bytes(saved), { name: 'AES-GCM' }, true, ['decrypt']).then(open).catch(function () { try { sessionStorage.removeItem(STORE); } catch (e) {} });
+  }
+  document.getElementById('f').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var no = document.getElementById('no'); no.classList.remove('on');
+    var btn = ev.target.querySelector('button'); btn.disabled = true;
+    derive(document.getElementById('u').value, document.getElementById('p').value)
+      .then(function (key) { return keep(key).then(function () { return open(key); }); })
+      .catch(function () { no.classList.add('on'); btn.disabled = false; document.getElementById('p').value = ''; document.getElementById('p').focus(); });
+  });
+})();
+</script>
+</body>
+</html>
